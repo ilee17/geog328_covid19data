@@ -116,7 +116,7 @@
             let fullyVaxPer10k = await response.json();
 
             map.on('load', function loadingData() {
-                map.addSource('wa-covid-data', {
+                map.addSource('wa-fully-vaxed', {
                     type: 'geojson',
                     data: fullyVaxPer10k
                 });
@@ -124,26 +124,24 @@
                 map.addLayer({
                     'id': 'vaxed',
                     'type': 'fill',
-                    'source': 'fullyVaxPer10k',
+                    'source': 'wa-fully-vaxed',
                     'paint': {
                         'fill-color': [
                             'step',
                             ['get', 'fullyVaxPer10k'],
                             '#FFEDA0',   // stop_output_0
-                            1000,          // stop_input_0
+                            2000,          // stop_input_0
                             '#FED976',   // stop_output_1
-                            2000,          // stop_input_1
+                            4000,          // stop_input_1
                             '#FEB24C',   // stop_output_2
-                            3000,          // stop_input_2
+                            5000,          // stop_input_2
                             '#FD8D3C',   // stop_output_3
-                            4000,         // stop_input_3
+                            6000,         // stop_input_3
                             '#FC4E2A',   // stop_output_4
-                            5000,         // stop_input_4
+                            7000,         // stop_input_4
                             '#E31A1C',   // stop_output_5
-                            6000,         // stop_input_5
-                            '#BD0026',   // stop_output_6
-                            7000,        // stop_input_6
-                            "#800026"    // stop_output_7
+                            8000,         // stop_input_5
+                            '#BD0026'
                         ],
                         'fill-outline-color': '#BBBBBB',
                         'fill-opacity': 0.7,
@@ -151,14 +149,13 @@
                 });
 
                 const layers = [
-                    '0-999',
-                    '1000-1999',
-                    '2000-2999',
-                    '3000-3999',
+                    '0-1999',
+                    '2000-3999',
                     '4000-4999',
                     '5000-5999',
                     '6000-6999',
-                    '7000 and more'
+                    '7000-7999',
+                    '8000 and more'
                 ];
                 const colors = [
                     '#FFEDA070',
@@ -192,11 +189,11 @@
             });
 
             map.on('mousemove', ({point}) => {
-                const state = map.queryRenderedFeatures(point, {
-                    layers: ['state_data_layer']
+                const county = map.queryRenderedFeatures(point, {
+                    layers: ['vaxed']
                 });
-                document.getElementById('text-description').innerHTML = state.length ?
-                    `<h3>${state[0].properties.name}</h3><p><strong><em>${state[0].properties.density}</strong> people per square mile</em></p>` :
+                document.getElementById('text-description').innerHTML = county.length ?
+                    `<h3>${county[0].properties.name}</h3><p><strong><em>${county[0].properties.fullyVaxPer10k}</strong> per 100k people</em></p>` :
                     `<p>Hover over a county!</p>`;
             });
         }
